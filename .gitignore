@@ -1,0 +1,5 @@
+.build/
+interview-notes.app/
+.DS_Store
+*.xcuserdata
+DerivedData/

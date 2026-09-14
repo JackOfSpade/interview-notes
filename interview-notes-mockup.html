@@ -1,0 +1,817 @@
+<div id="rehearse-concept" aria-label="Interactive mockup of the Rehearse macOS interview notes app">
+  <style>
+    #rehearse-concept {
+      --rehearse-accent: light-dark(#5856d6, #8c89ff);
+      --rehearse-accent-soft: light-dark(#e9e8fb, #302e58);
+      --rehearse-accent-ink: light-dark(#34318f, #d8d7ff);
+      --rehearse-window: light-dark(#f7f7f6, #1b1b1d);
+      --rehearse-sidebar: light-dark(#edece9, #252528);
+      --rehearse-list: light-dark(#f6f5f3, #202023);
+      --rehearse-editor: light-dark(#ffffff, #19191b);
+      --rehearse-raised: light-dark(#ffffff, #29292d);
+      --rehearse-text: light-dark(#202024, #f1f1f3);
+      --rehearse-secondary: light-dark(#73737a, #a9a9b0);
+      --rehearse-tertiary: light-dark(#a2a2a8, #73737a);
+      --rehearse-divider: light-dark(rgba(35, 35, 42, .11), rgba(255, 255, 255, .11));
+      --rehearse-hover: light-dark(rgba(35, 35, 42, .055), rgba(255, 255, 255, .065));
+      --rehearse-field: light-dark(rgba(255, 255, 255, .84), rgba(255, 255, 255, .075));
+      --rehearse-shadow: light-dark(0 22px 60px rgba(31, 31, 38, .18), 0 22px 70px rgba(0, 0, 0, .55));
+      --rehearse-red: light-dark(#e5484d, #ff666b);
+      --rehearse-yellow: light-dark(#e5a000, #ffc14d);
+      --rehearse-green: light-dark(#2f9e68, #57c58b);
+      width: 100%;
+      color: var(--rehearse-text);
+      color-scheme: light dark;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+
+    #rehearse-concept[data-accent="blue"] {
+      --rehearse-accent: light-dark(#1677c8, #58a9e6);
+      --rehearse-accent-soft: light-dark(#e1f1fb, #173a52);
+      --rehearse-accent-ink: light-dark(#0b548c, #c6e8ff);
+    }
+
+    #rehearse-concept[data-accent="amber"] {
+      --rehearse-accent: light-dark(#a66512, #efa641);
+      --rehearse-accent-soft: light-dark(#f8ecd8, #4b351d);
+      --rehearse-accent-ink: light-dark(#754307, #ffe1b3);
+    }
+
+    #rehearse-concept * { box-sizing: border-box; }
+    #rehearse-concept button,
+    #rehearse-concept input,
+    #rehearse-concept textarea { font: inherit; }
+
+    #rehearse-concept .rehearse-window {
+      width: 100%;
+      min-height: 680px;
+      overflow: hidden;
+      border: 1px solid var(--rehearse-divider);
+      border-radius: 14px;
+      background: var(--rehearse-window);
+      box-shadow: var(--rehearse-shadow);
+    }
+
+    #rehearse-concept .rehearse-titlebar {
+      height: 52px;
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px 0 16px;
+      border-bottom: 1px solid var(--rehearse-divider);
+      background: color-mix(in srgb, var(--rehearse-window) 92%, transparent);
+    }
+
+    #rehearse-concept .rehearse-window-controls,
+    #rehearse-concept .rehearse-title-actions,
+    #rehearse-concept .rehearse-title-left,
+    #rehearse-concept .rehearse-row,
+    #rehearse-concept .rehearse-meta,
+    #rehearse-concept .rehearse-detail-actions,
+    #rehearse-concept .rehearse-practice-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    #rehearse-concept .rehearse-title-left { gap: 14px; min-width: 0; }
+    #rehearse-concept .rehearse-window-controls { gap: 8px; flex: 0 0 auto; }
+    #rehearse-concept .rehearse-light { width: 12px; height: 12px; border-radius: 50%; }
+    #rehearse-concept .rehearse-light.red { background: #ff5f57; }
+    #rehearse-concept .rehearse-light.yellow { background: #febc2e; }
+    #rehearse-concept .rehearse-light.green { background: #28c840; }
+
+    #rehearse-concept .rehearse-title-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    #rehearse-concept .rehearse-title-actions { justify-content: flex-end; gap: 7px; }
+
+    #rehearse-concept .rehearse-icon-button,
+    #rehearse-concept .rehearse-text-button,
+    #rehearse-concept .rehearse-practice-button,
+    #rehearse-concept .rehearse-rating,
+    #rehearse-concept .rehearse-reveal,
+    #rehearse-concept .rehearse-collection-row,
+    #rehearse-concept .rehearse-nav-row,
+    #rehearse-concept .rehearse-question-row {
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    #rehearse-concept .rehearse-icon-button {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      background: transparent;
+    }
+
+    #rehearse-concept .rehearse-icon-button:hover,
+    #rehearse-concept .rehearse-text-button:hover { background: var(--rehearse-hover); }
+    #rehearse-concept .rehearse-icon-button svg { width: 16px; height: 16px; stroke-width: 1.8; }
+
+    #rehearse-concept .rehearse-text-button {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 9px;
+      border-radius: 7px;
+      background: transparent;
+      font-size: 13px;
+    }
+
+    #rehearse-concept .rehearse-practice-button {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 12px;
+      border-radius: 8px;
+      background: var(--rehearse-accent);
+      color: light-dark(#ffffff, #15151a);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    #rehearse-concept .rehearse-practice-button svg,
+    #rehearse-concept .rehearse-text-button svg { width: 15px; height: 15px; stroke-width: 2; }
+
+    #rehearse-concept .rehearse-workspace {
+      min-height: 627px;
+      display: grid;
+      grid-template-columns: 206px 306px minmax(0, 1fr);
+    }
+
+    #rehearse-concept .rehearse-sidebar,
+    #rehearse-concept .rehearse-question-list,
+    #rehearse-concept .rehearse-detail { min-width: 0; }
+
+    #rehearse-concept .rehearse-sidebar {
+      display: flex;
+      flex-direction: column;
+      padding: 18px 10px 12px;
+      border-right: 1px solid var(--rehearse-divider);
+      background: var(--rehearse-sidebar);
+    }
+
+    #rehearse-concept .rehearse-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 9px 17px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    #rehearse-concept .rehearse-mark {
+      width: 25px;
+      height: 25px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      color: light-dark(#ffffff, #15151a);
+      background: var(--rehearse-accent);
+    }
+
+    #rehearse-concept .rehearse-mark svg { width: 15px; height: 15px; }
+
+    #rehearse-concept .rehearse-nav-row,
+    #rehearse-concept .rehearse-collection-row {
+      width: 100%;
+      min-height: 31px;
+      display: grid;
+      grid-template-columns: 19px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 7px;
+      padding: 0 8px;
+      border-radius: 7px;
+      background: transparent;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    #rehearse-concept .rehearse-nav-row:hover,
+    #rehearse-concept .rehearse-collection-row:hover { background: var(--rehearse-hover); }
+    #rehearse-concept .rehearse-nav-row svg,
+    #rehearse-concept .rehearse-collection-row svg { width: 15px; height: 15px; color: var(--rehearse-secondary); stroke-width: 1.8; }
+    #rehearse-concept .rehearse-nav-row span:nth-child(2),
+    #rehearse-concept .rehearse-collection-row span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #rehearse-concept .rehearse-count { color: var(--rehearse-secondary); font-size: 12px; }
+    #rehearse-concept .rehearse-collection-row.is-selected { background: var(--rehearse-accent-soft); color: var(--rehearse-accent-ink); }
+    #rehearse-concept .rehearse-collection-row.is-selected svg { color: var(--rehearse-accent); }
+
+    #rehearse-concept .rehearse-section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 17px 8px 6px;
+      color: var(--rehearse-secondary);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    #rehearse-concept .rehearse-section-title button {
+      width: 22px;
+      height: 22px;
+      border: 0;
+      border-radius: 6px;
+      color: var(--rehearse-secondary);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    #rehearse-concept .rehearse-section-title button:hover { background: var(--rehearse-hover); }
+    #rehearse-concept .rehearse-section-title svg { width: 13px; height: 13px; }
+
+    #rehearse-concept .rehearse-sidebar-footer {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 9px 2px;
+      color: var(--rehearse-secondary);
+      font-size: 11px;
+    }
+
+    #rehearse-concept .rehearse-saved-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rehearse-green); }
+
+    #rehearse-concept .rehearse-question-list {
+      border-right: 1px solid var(--rehearse-divider);
+      background: var(--rehearse-list);
+    }
+
+    #rehearse-concept .rehearse-list-header { padding: 18px 14px 12px; border-bottom: 1px solid var(--rehearse-divider); }
+    #rehearse-concept .rehearse-list-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+    #rehearse-concept .rehearse-list-heading h2 { margin: 0; font-size: 19px; line-height: 1.25; font-weight: 500; }
+    #rehearse-concept .rehearse-list-heading p { margin: 3px 0 0; color: var(--rehearse-secondary); font-size: 12px; }
+
+    #rehearse-concept .rehearse-search {
+      height: 31px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 9px;
+      border: 1px solid var(--rehearse-divider);
+      border-radius: 8px;
+      background: var(--rehearse-field);
+      color: var(--rehearse-secondary);
+    }
+
+    #rehearse-concept .rehearse-search svg { width: 14px; height: 14px; flex: 0 0 auto; }
+    #rehearse-concept .rehearse-search input { width: 100%; min-width: 0; border: 0; outline: 0; color: var(--rehearse-text); background: transparent; font-size: 13px; }
+    #rehearse-concept .rehearse-search input::placeholder { color: var(--rehearse-tertiary); }
+
+    #rehearse-concept .rehearse-due-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 11px;
+      color: var(--rehearse-secondary);
+      font-size: 12px;
+    }
+
+    #rehearse-concept .rehearse-due-strip strong { color: var(--rehearse-text); font-weight: 500; }
+    #rehearse-concept .rehearse-due-strip button { border: 0; padding: 0; color: var(--rehearse-accent-ink); background: transparent; cursor: pointer; font-size: 12px; font-weight: 500; }
+
+    #rehearse-concept .rehearse-list-body { padding: 8px; }
+    #rehearse-concept .rehearse-list-label { margin: 10px 8px 5px; color: var(--rehearse-secondary); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .025em; }
+    #rehearse-concept .rehearse-question-row {
+      position: relative;
+      width: 100%;
+      display: block;
+      padding: 11px 12px 10px;
+      border-radius: 9px;
+      background: transparent;
+      text-align: left;
+    }
+
+    #rehearse-concept[data-density="compact"] .rehearse-question-row { padding-top: 7px; padding-bottom: 7px; }
+    #rehearse-concept .rehearse-question-row:hover { background: var(--rehearse-hover); }
+    #rehearse-concept .rehearse-question-row.is-selected { background: var(--rehearse-accent-soft); }
+    #rehearse-concept .rehearse-question-title { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; padding-right: 14px; font-size: 13px; line-height: 1.35; font-weight: 500; }
+    #rehearse-concept .rehearse-question-row.is-selected .rehearse-question-title { color: var(--rehearse-accent-ink); }
+    #rehearse-concept .rehearse-question-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; color: var(--rehearse-secondary); font-size: 11px; }
+    #rehearse-concept .rehearse-confidence { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
+    #rehearse-concept .rehearse-confidence.red { background: var(--rehearse-red); }
+    #rehearse-concept .rehearse-confidence.yellow { background: var(--rehearse-yellow); }
+    #rehearse-concept .rehearse-confidence.green { background: var(--rehearse-green); }
+    #rehearse-concept .rehearse-star { position: absolute; top: 12px; right: 10px; color: var(--rehearse-yellow); }
+    #rehearse-concept .rehearse-star svg { width: 13px; height: 13px; fill: currentColor; stroke-width: 1.5; }
+    #rehearse-concept .rehearse-empty-search { display: none; padding: 38px 22px; color: var(--rehearse-secondary); text-align: center; font-size: 13px; }
+
+    #rehearse-concept .rehearse-detail { background: var(--rehearse-editor); }
+    #rehearse-concept .rehearse-detail-toolbar {
+      min-height: 49px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 17px;
+      border-bottom: 1px solid var(--rehearse-divider);
+    }
+
+    #rehearse-concept .rehearse-back { display: none; }
+    #rehearse-concept .rehearse-meta { min-width: 0; gap: 7px; color: var(--rehearse-secondary); font-size: 12px; }
+    #rehearse-concept .rehearse-category {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 3px 7px;
+      border-radius: 5px;
+      background: var(--rehearse-hover);
+      color: var(--rehearse-secondary);
+    }
+
+    #rehearse-concept .rehearse-detail-actions { gap: 2px; }
+    #rehearse-concept .rehearse-editor-scroll { padding: 37px clamp(28px, 5.5vw, 70px) 64px; }
+    #rehearse-concept .rehearse-editor-content { max-width: 710px; margin: 0 auto; }
+    #rehearse-concept .rehearse-question-input {
+      width: 100%;
+      min-height: 74px;
+      resize: none;
+      overflow: hidden;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      color: var(--rehearse-text);
+      background: transparent;
+      font-size: 25px;
+      line-height: 1.22;
+      font-weight: 500;
+      letter-spacing: -.015em;
+    }
+
+    #rehearse-concept .rehearse-answer-status { display: flex; align-items: center; gap: 8px; margin: 9px 0 30px; color: var(--rehearse-secondary); font-size: 12px; }
+    #rehearse-concept .rehearse-answer-status .rehearse-confidence { width: 8px; height: 8px; }
+    #rehearse-concept .rehearse-answer-status span:last-child { margin-left: auto; }
+
+    #rehearse-concept .rehearse-answer-section { margin-top: 28px; }
+    #rehearse-concept .rehearse-answer-section h3 { margin: 0 0 11px; font-size: 13px; font-weight: 500; }
+    #rehearse-concept .rehearse-talking-points { display: grid; gap: 8px; padding: 15px 17px; border-radius: 11px; background: var(--rehearse-accent-soft); color: var(--rehearse-accent-ink); }
+    #rehearse-concept .rehearse-talking-point { display: grid; grid-template-columns: 7px minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 13px; line-height: 1.45; }
+    #rehearse-concept .rehearse-talking-point::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--rehearse-accent); }
+
+    #rehearse-concept .rehearse-star-answer { display: grid; gap: 9px; }
+    #rehearse-concept .rehearse-star-row { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 12px; align-items: start; }
+    #rehearse-concept .rehearse-star-label { padding-top: 9px; color: var(--rehearse-secondary); font-size: 12px; font-weight: 500; }
+    #rehearse-concept .rehearse-star-copy {
+      width: 100%;
+      min-height: 40px;
+      resize: none;
+      overflow: hidden;
+      padding: 8px 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      outline: 0;
+      color: var(--rehearse-text);
+      background: transparent;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #rehearse-concept .rehearse-star-copy:hover,
+    #rehearse-concept .rehearse-star-copy:focus { border-color: var(--rehearse-divider); background: var(--rehearse-field); }
+
+    #rehearse-concept .rehearse-tip {
+      display: flex;
+      gap: 9px;
+      margin-top: 26px;
+      padding-top: 16px;
+      border-top: 1px solid var(--rehearse-divider);
+      color: var(--rehearse-secondary);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    #rehearse-concept .rehearse-tip svg { width: 15px; height: 15px; flex: 0 0 auto; color: var(--rehearse-accent); }
+
+    #rehearse-concept .rehearse-practice-view {
+      min-height: 627px;
+      display: none;
+      flex-direction: column;
+      background: var(--rehearse-editor);
+    }
+
+    #rehearse-concept.is-practicing .rehearse-workspace { display: none; }
+    #rehearse-concept.is-practicing .rehearse-practice-view { display: flex; }
+    #rehearse-concept.is-practicing #rehearse-start-practice { display: none; }
+
+    #rehearse-concept .rehearse-practice-top {
+      min-height: 54px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--rehearse-divider);
+    }
+
+    #rehearse-concept .rehearse-practice-progress { display: flex; align-items: center; gap: 10px; color: var(--rehearse-secondary); font-size: 12px; }
+    #rehearse-concept .rehearse-progress-track { width: 94px; height: 4px; overflow: hidden; border-radius: 3px; background: var(--rehearse-hover); }
+    #rehearse-concept .rehearse-progress-fill { width: 25%; height: 100%; background: var(--rehearse-accent); }
+    #rehearse-concept .rehearse-practice-label { font-size: 13px; font-weight: 500; }
+
+    #rehearse-concept .rehearse-practice-main {
+      width: min(720px, calc(100% - 48px));
+      margin: auto;
+      padding: 60px 0 40px;
+      text-align: center;
+    }
+
+    #rehearse-concept .rehearse-practice-kicker { color: var(--rehearse-accent); font-size: 12px; font-weight: 500; letter-spacing: .035em; text-transform: uppercase; }
+    #rehearse-concept .rehearse-practice-question { margin: 17px 0 12px; font-size: 31px; line-height: 1.24; font-weight: 500; letter-spacing: -.02em; }
+    #rehearse-concept .rehearse-practice-hint { color: var(--rehearse-secondary); font-size: 13px; }
+
+    #rehearse-concept .rehearse-reveal {
+      min-height: 38px;
+      margin-top: 30px;
+      padding: 0 15px;
+      border-radius: 9px;
+      background: var(--rehearse-accent);
+      color: light-dark(#ffffff, #15151a);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    #rehearse-concept .rehearse-practice-answer { display: none; margin-top: 30px; text-align: left; }
+    #rehearse-concept .rehearse-practice-answer.is-visible { display: block; }
+    #rehearse-concept .rehearse-practice-answer h3 { margin: 0 0 11px; font-size: 13px; font-weight: 500; }
+    #rehearse-concept .rehearse-practice-points { display: grid; gap: 8px; padding: 16px 18px; border-radius: 11px; background: var(--rehearse-accent-soft); color: var(--rehearse-accent-ink); font-size: 13px; line-height: 1.45; }
+    #rehearse-concept .rehearse-full-answer { display: none; margin-top: 22px; color: var(--rehearse-text); font-size: 13px; line-height: 1.6; }
+    #rehearse-concept .rehearse-full-answer.is-visible { display: block; }
+    #rehearse-concept .rehearse-practice-actions { display: none; justify-content: center; gap: 9px; margin-top: 30px; }
+    #rehearse-concept .rehearse-practice-actions.is-visible { display: flex; }
+
+    #rehearse-concept .rehearse-rating {
+      min-width: 116px;
+      min-height: 41px;
+      padding: 0 13px;
+      border: 1px solid var(--rehearse-divider);
+      border-radius: 9px;
+      background: var(--rehearse-raised);
+      text-align: left;
+      font-size: 13px;
+    }
+
+    #rehearse-concept .rehearse-rating:hover { border-color: var(--rehearse-accent); }
+    #rehearse-concept .rehearse-rating small { display: block; margin-top: 2px; color: var(--rehearse-secondary); font-size: 10px; }
+
+    #rehearse-concept[data-preview="medium"] .rehearse-workspace { grid-template-columns: 306px minmax(0, 1fr); }
+    #rehearse-concept[data-preview="medium"] .rehearse-sidebar { display: none; }
+    #rehearse-concept[data-preview="compact"] .rehearse-workspace { display: block; }
+    #rehearse-concept[data-preview="compact"] .rehearse-sidebar,
+    #rehearse-concept[data-preview="compact"] .rehearse-question-list { display: none; }
+    #rehearse-concept[data-preview="compact"] .rehearse-back { display: inline-flex; }
+
+    @container (max-width: 850px) {
+      #rehearse-concept[data-preview="auto"] .rehearse-workspace { grid-template-columns: 292px minmax(0, 1fr); }
+      #rehearse-concept[data-preview="auto"] .rehearse-sidebar { display: none; }
+    }
+
+    @container (max-width: 610px) {
+      #rehearse-concept[data-preview="auto"] .rehearse-workspace { display: block; }
+      #rehearse-concept[data-preview="auto"] .rehearse-sidebar,
+      #rehearse-concept[data-preview="auto"] .rehearse-question-list { display: none; }
+      #rehearse-concept[data-preview="auto"] .rehearse-back { display: inline-flex; }
+      #rehearse-concept .rehearse-titlebar { grid-template-columns: 1fr auto; }
+      #rehearse-concept .rehearse-title-label { display: none; }
+      #rehearse-concept .rehearse-practice-main { width: calc(100% - 32px); }
+      #rehearse-concept .rehearse-practice-question { font-size: 25px; }
+      #rehearse-concept .rehearse-practice-actions { flex-direction: column; align-items: stretch; }
+      #rehearse-concept .rehearse-rating { text-align: center; }
+    }
+
+    #rehearse-concept { container-type: inline-size; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      #rehearse-concept .rehearse-question-row,
+      #rehearse-concept .rehearse-icon-button,
+      #rehearse-concept .rehearse-rating { transition: background-color 140ms ease, border-color 140ms ease; }
+    }
+  </style>
+
+  <section class="rehearse-window" aria-label="Rehearse app window">
+    <header class="rehearse-titlebar">
+      <div class="rehearse-title-left">
+        <div class="rehearse-window-controls" aria-hidden="true">
+          <span class="rehearse-light red"></span>
+          <span class="rehearse-light yellow"></span>
+          <span class="rehearse-light green"></span>
+        </div>
+        <button class="rehearse-icon-button" type="button" aria-label="Toggle sidebar" data-tooltip="Toggle sidebar">
+          <i data-lucide="panel-left" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="rehearse-title-label">Stripe — Product Designer</div>
+      <div class="rehearse-title-actions">
+        <button class="rehearse-text-button" type="button" aria-label="Add a new question">
+          <i data-lucide="plus" aria-hidden="true"></i><span>New question</span>
+        </button>
+        <button class="rehearse-practice-button" id="rehearse-start-practice" type="button">
+          <i data-lucide="play" aria-hidden="true"></i><span>Practice</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="rehearse-workspace">
+      <aside class="rehearse-sidebar" aria-label="Interview library">
+        <div class="rehearse-brand"><span class="rehearse-mark"><i data-lucide="message-square-quote" aria-hidden="true"></i></span><span>Rehearse</span></div>
+        <nav aria-label="Question filters">
+          <button class="rehearse-nav-row" type="button"><i data-lucide="inbox" aria-hidden="true"></i><span>All questions</span><span class="rehearse-count">36</span></button>
+          <button class="rehearse-nav-row" type="button"><i data-lucide="star" aria-hidden="true"></i><span>Starred</span><span class="rehearse-count">7</span></button>
+          <button class="rehearse-nav-row" type="button"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Needs practice</span><span class="rehearse-count">4</span></button>
+        </nav>
+
+        <div class="rehearse-section-title"><span>Interviews</span><button type="button" aria-label="Add interview"><i data-lucide="plus" aria-hidden="true"></i></button></div>
+        <div>
+          <button class="rehearse-collection-row is-selected" type="button" aria-current="page"><i data-lucide="briefcase-business" aria-hidden="true"></i><span>Stripe — Product Designer</span><span class="rehearse-count">12</span></button>
+          <button class="rehearse-collection-row" type="button"><i data-lucide="briefcase-business" aria-hidden="true"></i><span>Figma — Staff Designer</span><span class="rehearse-count">8</span></button>
+          <button class="rehearse-collection-row" type="button"><i data-lucide="messages-square" aria-hidden="true"></i><span>General behavioral</span><span class="rehearse-count">16</span></button>
+        </div>
+        <div class="rehearse-sidebar-footer"><span class="rehearse-saved-dot"></span><span>Saved locally just now</span></div>
+      </aside>
+
+      <section class="rehearse-question-list" aria-label="Prepared questions">
+        <div class="rehearse-list-header">
+          <div class="rehearse-list-heading">
+            <div><h2>Stripe</h2><p>Product Designer · Oct 2</p></div>
+            <button class="rehearse-icon-button" type="button" aria-label="Interview options"><i data-lucide="ellipsis" aria-hidden="true"></i></button>
+          </div>
+          <label class="rehearse-search">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input id="rehearse-search-input" type="search" placeholder="Search questions" aria-label="Search questions">
+          </label>
+          <div class="rehearse-due-strip"><span><strong>4</strong> questions need practice</span><button id="rehearse-practice-due" type="button">Practice due</button></div>
+        </div>
+        <div class="rehearse-list-body" id="rehearse-list-body">
+          <div class="rehearse-list-label">Needs practice</div>
+          <button class="rehearse-question-row is-selected" type="button" aria-selected="true" data-question="influence">
+            <span class="rehearse-star"><i data-lucide="star" aria-hidden="true"></i></span>
+            <span class="rehearse-question-title">Tell me about a time you influenced without authority.</span>
+            <span class="rehearse-question-meta"><span class="rehearse-confidence red"></span><span>Leadership</span><span>·</span><span>3 days ago</span></span>
+          </button>
+          <button class="rehearse-question-row" type="button" aria-selected="false" data-question="conflict">
+            <span class="rehearse-question-title">Describe a difficult disagreement with a stakeholder.</span>
+            <span class="rehearse-question-meta"><span class="rehearse-confidence yellow"></span><span>Collaboration</span><span>·</span><span>1 week ago</span></span>
+          </button>
+          <div class="rehearse-list-label">Prepared</div>
+          <button class="rehearse-question-row" type="button" aria-selected="false" data-question="whystripe">
+            <span class="rehearse-star"><i data-lucide="star" aria-hidden="true"></i></span>
+            <span class="rehearse-question-title">Why Stripe, and why this role right now?</span>
+            <span class="rehearse-question-meta"><span class="rehearse-confidence green"></span><span>Motivation</span><span>·</span><span>Yesterday</span></span>
+          </button>
+          <button class="rehearse-question-row" type="button" aria-selected="false" data-question="ambiguity">
+            <span class="rehearse-question-title">How do you make progress when the problem is ambiguous?</span>
+            <span class="rehearse-question-meta"><span class="rehearse-confidence green"></span><span>Process</span><span>·</span><span>Yesterday</span></span>
+          </button>
+          <div class="rehearse-empty-search" id="rehearse-empty-search">No questions match that search.</div>
+        </div>
+      </section>
+
+      <main class="rehearse-detail" aria-label="Selected interview answer">
+        <div class="rehearse-detail-toolbar">
+          <div class="rehearse-meta">
+            <button class="rehearse-icon-button rehearse-back" type="button" aria-label="Back to questions"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+            <span class="rehearse-category" id="rehearse-category">Leadership</span><span id="rehearse-practiced">Practiced 3 days ago</span>
+          </div>
+          <div class="rehearse-detail-actions">
+            <button class="rehearse-icon-button" type="button" aria-label="Star this question" data-tooltip="Star"><i data-lucide="star" aria-hidden="true"></i></button>
+            <button class="rehearse-icon-button" type="button" aria-label="More actions" data-tooltip="More"><i data-lucide="ellipsis" aria-hidden="true"></i></button>
+          </div>
+        </div>
+
+        <div class="rehearse-editor-scroll">
+          <div class="rehearse-editor-content">
+            <textarea class="rehearse-question-input" id="rehearse-question-input" rows="2" aria-label="Interview question">Tell me about a time you influenced without authority.</textarea>
+            <div class="rehearse-answer-status"><span class="rehearse-confidence red" id="rehearse-answer-dot"></span><span id="rehearse-confidence-copy">Building confidence</span><span>Edited just now</span></div>
+
+            <section class="rehearse-answer-section">
+              <h3>Talking points</h3>
+              <div class="rehearse-talking-points">
+                <div class="rehearse-talking-point"><span id="rehearse-point-one">Diagnosed why the roadmap conversation was stuck</span></div>
+                <div class="rehearse-talking-point"><span id="rehearse-point-two">Made the tradeoffs visible with a lightweight prototype</span></div>
+                <div class="rehearse-talking-point"><span id="rehearse-point-three">Earned alignment without escalating</span></div>
+              </div>
+            </section>
+
+            <section class="rehearse-answer-section">
+              <h3>Full answer · STAR</h3>
+              <div class="rehearse-star-answer">
+                <label class="rehearse-star-row"><span class="rehearse-star-label">Situation</span><textarea class="rehearse-star-copy" id="rehearse-situation" rows="2">Our activation roadmap had stalled because Product and Engineering disagreed on whether onboarding speed or flexibility mattered more.</textarea></label>
+                <label class="rehearse-star-row"><span class="rehearse-star-label">Task</span><textarea class="rehearse-star-copy" id="rehearse-task" rows="2">I needed to create alignment even though I didn’t own either team’s priorities.</textarea></label>
+                <label class="rehearse-star-row"><span class="rehearse-star-label">Action</span><textarea class="rehearse-star-copy" id="rehearse-action" rows="3">I interviewed both leads, reframed the disagreement around a shared activation metric, and built a small prototype that made each tradeoff tangible. I facilitated a review using evidence rather than opinions.</textarea></label>
+                <label class="rehearse-star-row"><span class="rehearse-star-label">Result</span><textarea class="rehearse-star-copy" id="rehearse-result" rows="2">We agreed on a phased approach in one session. The first release shipped two weeks earlier and improved completion by 11%.</textarea></label>
+              </div>
+            </section>
+
+            <div class="rehearse-tip"><i data-lucide="sparkles" aria-hidden="true"></i><span>Keep this answer under two minutes. Lead with the conflict, then spend most of the time on your specific actions.</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <section class="rehearse-practice-view" aria-label="Practice mode" aria-live="polite">
+      <div class="rehearse-practice-top">
+        <div><button class="rehearse-text-button" id="rehearse-exit-practice" type="button"><i data-lucide="x" aria-hidden="true"></i><span>Exit</span></button></div>
+        <div class="rehearse-practice-label">Practice session</div>
+        <div class="rehearse-practice-progress"><span>3 of 12</span><span class="rehearse-progress-track"><span class="rehearse-progress-fill"></span></span></div>
+      </div>
+      <div class="rehearse-practice-main">
+        <div class="rehearse-practice-kicker" id="rehearse-practice-category">Leadership</div>
+        <h2 class="rehearse-practice-question" id="rehearse-practice-question">Tell me about a time you influenced without authority.</h2>
+        <div class="rehearse-practice-hint" id="rehearse-practice-hint">Say your answer out loud, then reveal your notes.</div>
+        <button class="rehearse-reveal" id="rehearse-reveal" type="button">Reveal talking points <span aria-hidden="true">Space</span></button>
+        <div class="rehearse-practice-answer" id="rehearse-practice-answer">
+          <h3>Talking points</h3>
+          <div class="rehearse-practice-points" id="rehearse-practice-points">Diagnose the stalled roadmap · Make tradeoffs tangible · Earn alignment without escalation</div>
+          <div class="rehearse-full-answer" id="rehearse-full-answer"><strong>Full answer:</strong> I reframed a roadmap disagreement around a shared activation metric, prototyped both tradeoffs, and led an evidence-based review. The phased plan shipped two weeks earlier and lifted completion by 11%.</div>
+        </div>
+        <div class="rehearse-practice-actions" id="rehearse-practice-actions">
+          <button class="rehearse-rating" type="button">Again<small>Needs another pass · 1</small></button>
+          <button class="rehearse-rating" type="button">Good<small>Mostly there · 2</small></button>
+          <button class="rehearse-rating" type="button">Confident<small>Ready to use · 3</small></button>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <script>
+    (() => {
+      const root = document.getElementById('rehearse-concept');
+      if (!root) return;
+
+      const questions = {
+        influence: {
+          question: 'Tell me about a time you influenced without authority.',
+          category: 'Leadership', practiced: 'Practiced 3 days ago', confidence: 'Building confidence', level: 'red',
+          points: ['Diagnosed why the roadmap conversation was stuck', 'Made the tradeoffs visible with a lightweight prototype', 'Earned alignment without escalating'],
+          situation: 'Our activation roadmap had stalled because Product and Engineering disagreed on whether onboarding speed or flexibility mattered more.',
+          task: 'I needed to create alignment even though I didn’t own either team’s priorities.',
+          action: 'I interviewed both leads, reframed the disagreement around a shared activation metric, and built a small prototype that made each tradeoff tangible. I facilitated a review using evidence rather than opinions.',
+          result: 'We agreed on a phased approach in one session. The first release shipped two weeks earlier and improved completion by 11%.'
+        },
+        conflict: {
+          question: 'Describe a difficult disagreement with a stakeholder.',
+          category: 'Collaboration', practiced: 'Practiced 1 week ago', confidence: 'Getting there', level: 'yellow',
+          points: ['Separated the relationship from the problem', 'Brought user evidence into the conversation', 'Left with a clear decision rule'],
+          situation: 'A regional lead wanted a bespoke checkout flow that conflicted with our shared product direction.',
+          task: 'I had to protect product coherence without dismissing a legitimate market need.',
+          action: 'I listened for the underlying constraint, reviewed support evidence together, and proposed a configurable step that solved the need without forking the experience.',
+          result: 'We avoided a costly parallel flow, launched the configurable option, and reduced regional support tickets by 18%.'
+        },
+        whystripe: {
+          question: 'Why Stripe, and why this role right now?',
+          category: 'Motivation', practiced: 'Practiced yesterday', confidence: 'Confident', level: 'green',
+          points: ['Infrastructure that makes complex work feel simple', 'High-leverage systems design', 'Ready to operate at broader scope'],
+          situation: 'I’m most energized by products that hide enormous complexity behind clear, trustworthy interfaces.',
+          task: 'My next role should combine systems thinking, craft, and measurable impact for ambitious users.',
+          action: 'Stripe sits at that intersection. This role would let me apply my platform experience while learning from teams setting the standard for developer and business tools.',
+          result: 'It is the rare move that deepens my current strengths while stretching me into a larger, more consequential problem space.'
+        },
+        ambiguity: {
+          question: 'How do you make progress when the problem is ambiguous?',
+          category: 'Process', practiced: 'Practiced yesterday', confidence: 'Confident', level: 'green',
+          points: ['Turn uncertainty into explicit assumptions', 'Find the cheapest useful evidence', 'Make the next decision reversible'],
+          situation: 'I often begin with incomplete signals, competing definitions of success, and no obvious owner.',
+          task: 'My job is to create enough shared clarity for the team to move without pretending uncertainty is gone.',
+          action: 'I map what we know, label assumptions, agree on the riskiest question, and choose the smallest research or prototype that can answer it.',
+          result: 'The team gets momentum, decisions remain traceable, and we invest deeply only after the highest-risk assumptions survive contact with evidence.'
+        }
+      };
+
+      const fields = {
+        question: root.querySelector('#rehearse-question-input'),
+        category: root.querySelector('#rehearse-category'),
+        practiced: root.querySelector('#rehearse-practiced'),
+        confidence: root.querySelector('#rehearse-confidence-copy'),
+        dot: root.querySelector('#rehearse-answer-dot'),
+        pointOne: root.querySelector('#rehearse-point-one'),
+        pointTwo: root.querySelector('#rehearse-point-two'),
+        pointThree: root.querySelector('#rehearse-point-three'),
+        situation: root.querySelector('#rehearse-situation'),
+        task: root.querySelector('#rehearse-task'),
+        action: root.querySelector('#rehearse-action'),
+        result: root.querySelector('#rehearse-result')
+      };
+
+      let activeKey = 'influence';
+      const setQuestion = (key) => {
+        const item = questions[key];
+        if (!item) return;
+        activeKey = key;
+        fields.question.value = item.question;
+        fields.category.textContent = item.category;
+        fields.practiced.textContent = item.practiced;
+        fields.confidence.textContent = item.confidence;
+        fields.dot.className = `rehearse-confidence ${item.level}`;
+        fields.pointOne.textContent = item.points[0];
+        fields.pointTwo.textContent = item.points[1];
+        fields.pointThree.textContent = item.points[2];
+        fields.situation.value = item.situation;
+        fields.task.value = item.task;
+        fields.action.value = item.action;
+        fields.result.value = item.result;
+        root.querySelectorAll('.rehearse-question-row').forEach((row) => {
+          const selected = row.dataset.question === key;
+          row.classList.toggle('is-selected', selected);
+          row.setAttribute('aria-selected', String(selected));
+        });
+      };
+
+      root.querySelectorAll('.rehearse-question-row').forEach((row) => row.addEventListener('click', () => setQuestion(row.dataset.question)));
+
+      const searchInput = root.querySelector('#rehearse-search-input');
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        let shown = 0;
+        root.querySelectorAll('.rehearse-question-row').forEach((row) => {
+          const visible = row.textContent.toLowerCase().includes(query);
+          row.hidden = !visible;
+          if (visible) shown += 1;
+        });
+        root.querySelector('#rehearse-empty-search').style.display = shown ? 'none' : 'block';
+      });
+
+      const enterPractice = () => {
+        const item = questions[activeKey];
+        revealStep = 0;
+        root.querySelector('#rehearse-practice-category').textContent = item.category;
+        root.querySelector('#rehearse-practice-question').textContent = item.question;
+        root.querySelector('#rehearse-practice-points').textContent = item.points.join(' · ');
+        root.querySelector('#rehearse-practice-answer').classList.remove('is-visible');
+        root.querySelector('#rehearse-full-answer').classList.remove('is-visible');
+        root.querySelector('#rehearse-practice-actions').classList.remove('is-visible');
+        root.querySelector('#rehearse-reveal').textContent = 'Reveal talking points  Space';
+        root.querySelector('#rehearse-reveal').hidden = false;
+        root.querySelector('#rehearse-practice-hint').textContent = 'Say your answer out loud, then reveal your notes.';
+        root.classList.add('is-practicing');
+        root.querySelector('#rehearse-reveal').focus();
+      };
+
+      root.querySelector('#rehearse-start-practice').addEventListener('click', enterPractice);
+      root.querySelector('#rehearse-practice-due').addEventListener('click', enterPractice);
+      root.querySelector('#rehearse-exit-practice').addEventListener('click', () => root.classList.remove('is-practicing'));
+
+      let revealStep = 0;
+      const reveal = () => {
+        if (!root.classList.contains('is-practicing')) return;
+        revealStep += 1;
+        if (revealStep === 1) {
+          root.querySelector('#rehearse-practice-answer').classList.add('is-visible');
+          root.querySelector('#rehearse-reveal').textContent = 'Reveal full answer  Space';
+          root.querySelector('#rehearse-practice-hint').textContent = 'Compare your answer with the points you wanted to cover.';
+        } else {
+          root.querySelector('#rehearse-full-answer').classList.add('is-visible');
+          root.querySelector('#rehearse-practice-actions').classList.add('is-visible');
+          root.querySelector('#rehearse-reveal').hidden = true;
+          root.querySelector('#rehearse-practice-hint').textContent = 'Rate the recall, not the performance.';
+        }
+      };
+
+      root.querySelector('#rehearse-reveal').addEventListener('click', reveal);
+      root.addEventListener('keydown', (event) => {
+        if (event.code === 'Space' && root.classList.contains('is-practicing')) {
+          event.preventDefault();
+          reveal();
+        }
+        if (event.key === 'Escape' && root.classList.contains('is-practicing')) root.classList.remove('is-practicing');
+      });
+
+      root.querySelectorAll('.rehearse-rating').forEach((button) => button.addEventListener('click', () => {
+        root.classList.remove('is-practicing');
+        revealStep = 0;
+      }));
+
+      const preview = { layout: 'auto', accent: 'indigo', comfortableSpacing: true };
+      const renderPreview = () => {
+        root.dataset.preview = preview.layout;
+        root.dataset.accent = preview.accent;
+        root.dataset.density = preview.comfortableSpacing ? 'comfortable' : 'compact';
+      };
+      renderPreview();
+
+      if (globalThis.Tweak) {
+        const tweak = new Tweak({ container: root, onChange: renderPreview });
+        tweak.addSelect(preview, 'layout', { label: 'Window layout', options: [{ label: 'Responsive', value: 'auto' }, { label: 'Three panes', value: 'wide' }, { label: 'Two panes', value: 'medium' }, { label: 'Focused editor', value: 'compact' }], reference: 'layout.mode' });
+        tweak.addSelect(preview, 'accent', { label: 'Accent', options: [{ label: 'Indigo', value: 'indigo' }, { label: 'Blue', value: 'blue' }, { label: 'Amber', value: 'amber' }], reference: 'theme.accent' });
+        tweak.addToggle(preview, 'comfortableSpacing', { label: 'Comfortable spacing', reference: 'layout.comfortable' });
+      }
+    })();
+  </script>
+</div>
