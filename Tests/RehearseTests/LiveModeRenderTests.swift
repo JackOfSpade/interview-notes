@@ -198,9 +198,14 @@ final class LiveModeRenderTests: XCTestCase {
 
         window.layoutIfNeeded()
         hostingView.layoutSubtreeIfNeeded()
-        // The timer starts after the layout preference measures the text. At
-        // 200 WPM, 0.5 seconds is enough to finish this one-word answer.
-        RunLoop.current.run(until: Date().addingTimeInterval(0.5))
+        // The timer starts after the layout preference measures the text. Wait
+        // for that observable completion rather than assuming the preference
+        // has propagated within one fixed render-loop interval on every
+        // hosted macOS image.
+        let deadline = Date().addingTimeInterval(2)
+        while playback.completionCount == 0 && Date() < deadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+        }
 
         XCTAssertEqual(playback.completionCount, 1)
         XCTAssertFalse(playback.isPlaying)
