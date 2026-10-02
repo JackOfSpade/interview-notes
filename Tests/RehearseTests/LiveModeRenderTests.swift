@@ -169,7 +169,7 @@ final class LiveModeRenderTests: XCTestCase {
         XCTAssertEqual(completion.count, 0, "An idle teleprompter must not auto-scroll to its end.")
     }
 
-    func testPlayingShortTeleprompterReachesEndOnceAfterLayout() {
+    func testPlayingShortTeleprompterRespectsMotionPreferenceAfterLayout() {
         let playback = TeleprompterPlaybackRecorder(isPlaying: true)
         let size = CGSize(width: 360, height: 240)
         let stage = TeleprompterStageView(
@@ -198,16 +198,25 @@ final class LiveModeRenderTests: XCTestCase {
 
         window.layoutIfNeeded()
         hostingView.layoutSubtreeIfNeeded()
-        // The timer starts after the layout preference measures the text. Wait
-        // for that observable completion rather than assuming the preference
-        // has propagated within one fixed render-loop interval on every
-        // hosted macOS image.
-        let deadline = Date().addingTimeInterval(2)
-        while playback.completionCount == 0 && Date() < deadline {
-            RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+        if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+            // The stage deliberately turns playback off rather than starting
+            // an automatic timer when the system asks to reduce motion. Give
+            // the initial layout and preference propagation a run-loop turn,
+            // then verify that this accessibility behavior does not report a
+            // synthetic completion.
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+            XCTAssertEqual(playback.completionCount, 0)
+        } else {
+            // The timer starts after the layout preference measures the text.
+            // Wait for that observable completion rather than assuming the
+            // preference has propagated within one fixed render-loop interval
+            // on every hosted macOS image.
+            let deadline = Date().addingTimeInterval(2)
+            while playback.completionCount == 0 && Date() < deadline {
+                RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+            }
+            XCTAssertEqual(playback.completionCount, 1)
         }
-
-        XCTAssertEqual(playback.completionCount, 1)
         XCTAssertFalse(playback.isPlaying)
     }
 
