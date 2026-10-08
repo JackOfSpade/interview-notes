@@ -10,6 +10,7 @@ private enum LiveModeScreen {
 public struct LiveModeView: View {
     @ObservedObject private var prefs = AppPreferences.shared
     @ObservedObject private var windowManager = WindowManager.shared
+    @StateObject private var liveAssist = LiveAssistSession()
 
     public var questions: [Question]
     public var onExit: (Question?) -> Void
@@ -23,6 +24,7 @@ public struct LiveModeView: View {
     @State private var manualScrollDirection = 0
     @State private var restartToken = 0
     @State private var shouldRestoreQuestionPosition = false
+    @State private var showPreparedScript = false
 
     private var reduceMotionIsActive: Bool {
         NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
@@ -92,6 +94,24 @@ public struct LiveModeView: View {
         .onChange(of: currentIndex) { _, _ in
             resetReading()
         }
+        .onAppear {
+            liveAssist.setQuestions(questions)
+        }
+        .onChange(of: questions.map(\.id)) { _, _ in
+            liveAssist.setQuestions(questions)
+        }
+        .onReceive(liveAssist.$cuePlan) { plan in
+            guard let plan else { return }
+            if let matchedID = plan.match?.questionID,
+               let index = questions.firstIndex(where: { $0.id == matchedID }) {
+                currentIndex = index
+            }
+            showPreparedScript = false
+            screen = .answer
+        }
+        .onDisappear {
+            Task { await liveAssist.stopListening() }
+        }
     }
 
     private var questionSelection: some View {
@@ -102,6 +122,14 @@ public struct LiveModeView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(spacing: 10) {
+                        LiveAssistControls(session: liveAssist)
+
+                        Text("Or choose a prepared answer")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 2)
+
                         ForEach(Array(questions.enumerated()), id: \.element.id) { index, question in
                             questionButton(for: question, at: index)
                                 .id(question.id)
@@ -130,7 +158,6 @@ public struct LiveModeView: View {
             }
             .buttonStyle(.bordered)
             .controlSize(.regular)
-            .keyboardShortcut(.escape, modifiers: [])
             .help("Return to interview setup")
         }
         .padding(.horizontal, 12)
@@ -194,7 +221,9 @@ public struct LiveModeView: View {
 
     private func answerScreen(for question: Question) -> some View {
         VStack(spacing: 0) {
-            if answerText.isEmpty {
+            if let plan = liveAssist.cuePlan, !showPreparedScript {
+                LiveCueRailView(plan: plan, heardQuestion: liveAssist.heardQuestion)
+            } else if answerText.isEmpty {
                 Spacer(minLength: 0)
             } else {
                 TeleprompterStageView(
@@ -242,7 +271,39 @@ public struct LiveModeView: View {
 
     private var answerFooter: some View {
         HStack(spacing: 4) {
-            if !answerText.isEmpty {
+            if liveAssist.cuePlan != nil, !showPreparedScript {
+                if liveAssist.cuePlan?.match != nil, !answerText.isEmpty {
+                    Button {
+                        showPreparedScript = true
+                    } label: {
+                        Label("Script", systemImage: "text.alignleft")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.regular)
+                    .help("Show the full prepared script")
+                }
+
+                Button {
+                    liveAssist.prepareForNextQuestion()
+                    showQuestionSelection()
+                } label: {
+                    Label("Next", systemImage: "arrow.right")
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.regular)
+                .help("Clear this cue rail and wait for the next question")
+            } else if !answerText.isEmpty {
+                if liveAssist.cuePlan != nil {
+                    Button {
+                        showPreparedScript = false
+                    } label: {
+                        Label("Cues", systemImage: "list.number")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.regular)
+                    .help("Return to the conversational cue rail")
+                }
+
                 Button {
                     isPlaying.toggle()
                 } label: {
@@ -318,6 +379,8 @@ public struct LiveModeView: View {
         manualScrollDirection = 0
         isPlaying = false
         currentIndex = index
+        liveAssist.showPreparedQuestion(questions[index])
+        showPreparedScript = false
         restartToken += 1
         screen = .answer
     }
@@ -325,6 +388,7 @@ public struct LiveModeView: View {
     private func showQuestionSelection() {
         manualScrollDirection = 0
         isPlaying = false
+        showPreparedScript = false
         shouldRestoreQuestionPosition = true
         screen = .questionSelection
     }

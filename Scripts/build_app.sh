@@ -75,6 +75,8 @@ cat <<EOF > "$CONTENTS_DIR/Info.plist"
     <string>14.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Interview Notes transcribes the meeting app you explicitly select to surface your own prepared answer cues.</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>

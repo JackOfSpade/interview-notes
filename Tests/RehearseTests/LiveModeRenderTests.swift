@@ -136,6 +136,36 @@ final class LiveModeRenderTests: XCTestCase {
         )
     }
 
+    func testCueRailRendersAReadableCurrentThoughtAtCompactSize() throws {
+        let question = Question(
+            prompt: "Describe a disagreement with a stakeholder.",
+            category: .collaboration,
+            answerFormat: .star,
+            situation: "A regional lead wanted a bespoke checkout flow.",
+            task: "Protect product coherence while meeting a valid market need.",
+            action: "I reviewed support evidence with them and proposed a configurable alternative.",
+            result: "Regional support tickets fell by 18%."
+        )
+        let engine = LiveCueEngine()
+        let heard = "Tell me about a disagreement with a regional stakeholder over checkout."
+        let plan = engine.plan(transcript: heard, among: [question])
+        let size = CGSize(width: 360, height: 240)
+        let view = LiveCueRailView(plan: plan, heardQuestion: heard)
+            .frame(width: size.width, height: size.height)
+
+        let image = try render(view, at: size)
+        XCTAssertEqual(image.size.width, size.width, accuracy: 1)
+        XCTAssertEqual(image.size.height, size.height, accuracy: 1)
+
+        if let snapshotDirectory = ProcessInfo.processInfo.environment["REHEARSE_SNAPSHOT_DIR"] {
+            try writePNG(
+                image,
+                to: URL(fileURLWithPath: snapshotDirectory, isDirectory: true),
+                fileName: "live-cue-rail-current-thought.png"
+            )
+        }
+    }
+
     func testIdleTeleprompterDoesNotReachEndAfterLayout() {
         let completion = TeleprompterCompletionRecorder()
         let size = CGSize(width: 360, height: 240)
